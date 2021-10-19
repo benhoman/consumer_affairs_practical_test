@@ -30,6 +30,29 @@ class EventBase(SQLModel):
             raise ValueError('timestamp is in the future')
         return v
 
+    @validator('data')
+    def payload_validation(cls, v, values, **kwargs):
+        # Implement category + name specific validation
+        category = values.get('category')
+        name = values.get('name')
+
+        if category == "page interaction" and name == "pageview":
+            expected_keys = ["host", "path"]
+            if not all(key in v for key in expected_keys):
+                raise ValueError('payload missing data')
+        elif category == "page interaction" and name == "cta click":
+            expected_keys = ["host", "path", "element"]
+            if not all(key in v for key in expected_keys):
+                raise ValueError('payload missing data')
+        elif category == "form interaction" and name == "submit":
+            expected_keys = ["host", "path", "form"]
+            if not all(key in v for key in expected_keys):
+                raise ValueError('payload missing data')
+            elif not isinstance(v.get("form"), dict):
+                raise ValueError('payload form object is bad')
+
+        return v
+
 
 class Event(EventBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
