@@ -1,8 +1,9 @@
 from datetime import datetime
-from fastapi import FastAPI, Response, Depends
+from fastapi import FastAPI, Response, Depends, Query
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import (
     Field, SQLModel, create_engine, Relationship,
-    Column, JSON, Session
+    Column, JSON, Session, select
 )
 from typing import Optional, Any, List, Dict
 
@@ -32,6 +33,10 @@ class EventCreate(EventBase):
     pass
 
 
+class EventRead(EventBase):
+    id: int
+
+
 sqlite_url = "sqlite:///database.db"
 engine = create_engine(sqlite_url)
 
@@ -54,11 +59,27 @@ def on_startup():
 
 
 @app.post("/events/", response_class=Response, status_code=204)
-async def create_event(
+def create_event(
     *, session: Session = Depends(get_session),
     event: EventCreate
 ):
+    try:
+        user_session_obj = UserSession(id=event.session_id)
+        session.add(user_session_obj)
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+
     event_obj = Event.from_orm(event)
     session.add(event_obj)
     session.commit()
     return
+
+
+@app.get("/events/session/{session_id}", response_model=List[EventRead])
+def get_events_by_session_id(
+    *, session: Session = Depends(get_session), session_id: str,
+    offset: int = 0, limit: int = Query(default=100, lte=100)
+):
+    events = session.exec(select(Event).offset(offset).limit(limit)).all()
+    return events
