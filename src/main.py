@@ -81,5 +81,20 @@ def get_events_by_session_id(
     *, session: Session = Depends(get_session), session_id: str,
     offset: int = 0, limit: int = Query(default=100, lte=100)
 ):
-    events = session.exec(select(Event).offset(offset).limit(limit)).all()
+    events = session.exec(
+        select(Event).where(
+            Event.session_id == session_id
+        ).offset(offset).limit(limit)).all()
+    return events
+
+
+@app.get("/events/category/{category_name}", response_model=List[EventRead])
+def get_events_by_category(
+    *, session: Session = Depends(get_session), category_name: str,
+    offset: int = 0, limit: int = Query(default=100, lte=100)
+):
+    events = session.exec(
+        select(Event).where(
+            Event.category == category_name
+        ).offset(offset).limit(limit)).all()
     return events
