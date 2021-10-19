@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import FastAPI, Response, Depends, Query
+from fastapi import FastAPI, Response, Depends, Query, BackgroundTasks
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import (
     Field, SQLModel, create_engine, Relationship,
@@ -53,16 +53,7 @@ def get_session():
 app = FastAPI()
 
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
-
-
-@app.post("/events/", response_class=Response, status_code=204)
-def create_event(
-    *, session: Session = Depends(get_session),
-    event: EventCreate
-):
+def create_event_in_background(session: Session, event: EventCreate):
     try:
         user_session_obj = UserSession(id=event.session_id)
         session.add(user_session_obj)
@@ -73,6 +64,23 @@ def create_event(
     event_obj = Event.from_orm(event)
     session.add(event_obj)
     session.commit()
+
+
+
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
+
+
+@app.post("/events/", response_class=Response, status_code=204)
+def create_event(
+    *, session: Session = Depends(get_session),
+    background_tasks: BackgroundTasks, event: EventCreate
+):
+    background_tasks.add_task(
+        create_event_in_background,
+        session=session, event=event
+    )
     return
 
 
