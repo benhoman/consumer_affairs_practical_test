@@ -1,0 +1,24 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>The Eye - ReDoc</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <style data-styled="" data-styled-version="4.4.1"></style>
+</head>
+<body>
+    <div id="redoc-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"> </script>
+    <script>
+        var spec = {"openapi":"3.0.2","info":{"title":"FastAPI","version":"0.1.0"},"paths":{"/events/":{"post":{"summary":"Create Event","operationId":"create_event_events__post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/EventCreate"}}},"required":true},"responses":{"204":{"description":"Successful Response"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/events/session/{session_id}":{"get":{"summary":"Get Events By Session Id","operationId":"get_events_by_session_id_events_session__session_id__get","parameters":[{"required":true,"schema":{"title":"Session Id","type":"string"},"name":"session_id","in":"path"},{"required":false,"schema":{"title":"Offset","type":"integer","default":0},"name":"offset","in":"query"},{"required":false,"schema":{"title":"Limit","type":"integer","default":100,"lte":100},"name":"limit","in":"query"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"title":"Response Get Events By Session Id Events Session  Session Id  Get","type":"array","items":{"$ref":"#/components/schemas/EventRead"}}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/events/category/{category_name}":{"get":{"summary":"Get Events By Category","operationId":"get_events_by_category_events_category__category_name__get","parameters":[{"required":true,"schema":{"title":"Category Name","type":"string"},"name":"category_name","in":"path"},{"required":false,"schema":{"title":"Offset","type":"integer","default":0},"name":"offset","in":"query"},{"required":false,"schema":{"title":"Limit","type":"integer","default":100,"lte":100},"name":"limit","in":"query"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"title":"Response Get Events By Category Events Category  Category Name  Get","type":"array","items":{"$ref":"#/components/schemas/EventRead"}}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},"components":{"schemas":{"EventCreate":{"title":"EventCreate","required":["category","name","data","timestamp","session_id"],"type":"object","properties":{"category":{"title":"Category","type":"string"},"name":{"title":"Name","type":"string"},"data":{"title":"Data","type":"object"},"timestamp":{"title":"Timestamp","type":"string","format":"date-time"},"session_id":{"title":"Session Id","type":"string"}}},"EventRead":{"title":"EventRead","required":["category","name","data","timestamp","session_id","id"],"type":"object","properties":{"category":{"title":"Category","type":"string"},"name":{"title":"Name","type":"string"},"data":{"title":"Data","type":"object"},"timestamp":{"title":"Timestamp","type":"string","format":"date-time"},"session_id":{"title":"Session Id","type":"string"},"id":{"title":"Id","type":"integer"}}},"HTTPValidationError":{"title":"HTTPValidationError","type":"object","properties":{"detail":{"title":"Detail","type":"array","items":{"$ref":"#/components/schemas/ValidationError"}}}},"ValidationError":{"title":"ValidationError","required":["loc","msg","type"],"type":"object","properties":{"loc":{"title":"Location","type":"array","items":{"type":"string"}},"msg":{"title":"Message","type":"string"},"type":{"title":"Error Type","type":"string"}}}}}};
+        Redoc.init(spec, {}, document.getElementById("redoc-container"));
+    </script>
+</body>
+</html>
