@@ -1,5 +1,6 @@
 from datetime import datetime
 from fastapi import FastAPI, Response, Depends, Query, BackgroundTasks
+from pydantic import validator
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import (
     Field, SQLModel, create_engine, Relationship,
@@ -22,6 +23,12 @@ class EventBase(SQLModel):
     )
     timestamp: datetime
     session_id: str = Field(foreign_key="usersession.id")
+
+    @validator('timestamp')
+    def timestamp_must_not_be_in_future(cls, v):
+        if v > datetime.utcnow():
+            raise ValueError('timestamp is in the future')
+        return v
 
 
 class Event(EventBase, table=True):
